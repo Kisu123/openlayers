@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tiled WMS</title>
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <!-- The line below is only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=requestAnimationFrame,Element.prototype.classList,URL"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+    <style>
+      .map {
+          height: 100vh;
+          width: 100%;
+      }
+      .legend {
+          background: white;
+          border: 1px solid black;
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          padding: 10px;
+      }
+  </style>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <div id="legend" class="legend"></div>
+    <script>
+      var layers = [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        }),
+        new ol.layer.Tile({ 
+          source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/FIRST/wms',
+            params: {'LAYERS': 'FIRST:dhalgaon', 'TILED': true},
+            serverType: 'geoserver',
+            // Countries have transparency, so do not fade tiles:
+          }),
+        }),
+
+        new ol.layer.Tile({ 
+          source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/FIRST/wms',
+            params: {'LAYERS': 'FIRST:parcel7', 'TILED': true},
+            serverType: 'geoserver',
+            // Countries have transparency, so do not fade tiles:
+          }),  
+        }),
+
+        new ol.layer.Tile({ 
+          source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/FIRST/wms',
+            params: {'LAYERS': 'FIRST:farm_pond2', 'TILED': true},
+            serverType: 'geoserver',
+            // Countries have transparency, so do not fade tiles:
+          }),  
+        }),
+
+        new ol.layer.Tile({ 
+          source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/FIRST/wms',
+            params: {'LAYERS': 'FIRST:openwell2', 'TILED': true},
+            serverType: 'geoserver',
+            // Countries have transparency, so do not fade tiles:
+          }),  
+        }),
+
+        new ol.layer.Tile({ 
+          source: new ol.source.TileWMS({
+            url: 'http://localhost:8080/geoserver/FIRST/wms',
+            params: {'LAYERS': 'FIRST:odha1', 'TILED': true},
+            serverType: 'geoserver',
+            // Countries have transparency, so do not fade tiles:
+          }),  
+        })
+      ];
+      var map = new ol.Map({
+        layers: layers,
+        target: 'map',
+        view: new ol.View({
+          center: [74.99216, 17.11206],
+          projection: 'EPSG:4326',
+          zoom: 13.5
+        })
+      });
+      var legendUrl = 'http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=FIRST:dhalgaon';
+        document.getElementById('legend').innerHTML = '<img src="' + legendUrl + '" alt="Legend">';
+
+        // Layer switcher
+        var layerSwitcher = new ol.control.LayerSwitcher({
+            activationMode: 'click',
+            startActive: false,
+            tipLabel: 'Legend',
+            collapseTipLabel: 'Collapse legend',
+            groupSelectStyle: 'children'
+        });
+        map.addControl(layerSwitcher);
+
+        // Mouse position control
+        var mousePositionControl = new ol.control.MousePosition({
+            coordinateFormat: ol.coordinate.createStringXY(4),
+            projection: 'EPSG:4326',
+            className: 'custom-mouse-position',
+            target: document.getElementById('mouse-position'),
+            undefinedHTML: '&nbsp;'
+        });
+        map.addControl(mousePositionControl);
+
+        // Full screen control
+        var fullScreenControl = new ol.control.FullScreen();
+        map.addControl(fullScreenControl);
+    </script>
+  </body>
+</html>
